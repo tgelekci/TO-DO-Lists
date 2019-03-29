@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    
+
+    
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    
+<script>
+
+
+$(document).ready(function(){
+   $("#btn_submit").click(function(){
+       var data1={   
+             task: $("#task").val(),
+             date: $("#date").val(),
+             action:'insert'
+}
+       $.ajax({
+           url:"db.php",
+           data:data1,
+           success: function(res) {
+                var jsonResponse = JSON.parse(res);
+               if(!jsonResponse.status || jsonResponse.status === 500) {
+                   alert('Hata');
+                   return;
+               }
+               
+
+               var table='<tr id="'+jsonResponse.content.message.taskno+'" bgcolor=\"#FFFFFF\"><td>' + jsonResponse.content.message.taskno + '</td><td>' +jsonResponse.content.message.task + '</td><td>'+ jsonResponse.content.message.date +'</td></tr>';
+            
+                $("#tlb").append(table);
+                               
+                           
+               
+             //  var str = '<tr><td>' + jsonResponse.content.message.task + '</td><td>'+ jsonResponse.content.message.date +'</td></tr>';
+               //console.log(str);
+            }
+           
+       })
+   });
+    
+    $("#btn_rem").click(function(){
+        var taskno = $("#rmvtext").val();
+        var data2={
+            taskno:taskno,
+            action: 'delete'
+        }
+        
+        $.ajax({
+            url:"db.php",
+            data:data2,
+            success:function(res){
+                var jsonResponse=JSON.parse(res);
+                if(!jsonResponse.status||jsonResponse.status===500){
+                    alert("Hata");
+                    return;
+                }
+                document.getElementById(jsonResponse.content.message.taskno).remove();
+            }
+        })
+        
+    })
+    
+    var data3={
+        task: $("#task").val(),
+        date: $("#date").val(),
+        taskno:$("#rmvtext").val(),
+        action: 'select'
+    }
+    $.ajax({
+        url:"db.php",
+        data:data3,
+        success:function(res){
+                var jsonRes=JSON.parse(res);
+                if(!jsonRes.status||jsonRes.status===500){
+                    alert("Hata");
+                    return;
+                    
+                }
+            
+            for(var i=0; i<jsonRes.content.message.length; i++){
+            var table='<tr id="'+jsonRes.content.message[i].taskno+'" bgcolor=\"#FFFFFF\"><td>' + jsonRes.content.message[i].taskno + '</td><td>' +jsonRes.content.message[i].task + '</td><td>'+ jsonRes.content.message[i].date +'</td></tr>';
+            
+            $("#tlb").append(table);
+            }
+            
+            }
+        
+        
+        
+        
+    })
+    
+    
+});    
+
+
+</script>
+    
+    
+</head>
+<body class="p-3 mb-2 bg-info text-white">
+
+
+<div>
+    
+    <div class="container-fluid">
+        <div class="page-header">
+            <h2>THINGS TO DO</h2>  
+        </div>
+        <form >
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-star"></i></span>
+                <input id="task" type="text" class="form-control" name="task" placeholder="Enter Task">
+            </div>
+            <br>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                <input id="date" type="date" class="form-control" name="date">
+            </div>
+            <br>
+            <input type="button" id="btn_submit" class="btn btn-success" value="Submit" name="submit" style="float: right" >
+            <br>
+           
+        </form>
+    </div>
+    
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-10">
+             <table id="tlb" class="table table bordered">
+             <tr class="warning">
+                 <th>TASK NO</th>
+                 <th>TASK</th>
+                 <th>DATE</th>
+                 </tr>
+                
+                 
+                </table>
+                   
+            </div>
+        </div>
+        <div class="row">
+            <form >
+                <div class="col-lg-1"></div>
+                <div class="col-lg-9">
+                    <input id="rmvtext" type="text" class="form-control" name="removetext" placeholder="Enter the number of the task you want to remove ">
+                </div>
+                <div class="col-lg-1">
+                    <input type="button" id="btn_rem" class="btn btn-danger" value="Remove" name="rmvb">
+                
+                
+                
+                </div>
+                </form>
+        </div>
+        
+    </div>
+    </div>
+
+    
+</body>
+</html>
